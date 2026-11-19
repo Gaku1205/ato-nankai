@@ -1,4 +1,5 @@
-import type { Absence, AppData, Course, Limit, Weekday } from "./types";
+import { effectiveAbsences } from "./late";
+import type { Absence, AppData, Course, Late, Limit, Weekday } from "./types";
 
 export type Remaining = {
   /** あと何回休めるか（0以上） */
@@ -41,8 +42,9 @@ export type CourseStatus = {
   tier: Tier;
 };
 
-export function statusOf(course: Course, absences: readonly Absence[]): CourseStatus {
-  const n = absenceCount(absences, course.id);
+/** 欠席に、遅刻・早退の換算分を足して残り回数を出す */
+export function statusOf(course: Course, absences: readonly Absence[], lates: readonly Late[]): CourseStatus {
+  const n = effectiveAbsences(course, absences, lates);
   const remaining = remainingFor(course.limit, n);
   return { course, absences: n, remaining, tier: tierOf(remaining.count) };
 }
@@ -59,7 +61,7 @@ export function todayCourses(data: AppData, today: Date): CourseStatus[] {
   if (wd === null) return [];
   return data.courses
     .filter((c) => c.weekday === wd)
-    .map((c) => statusOf(c, data.absences))
+    .map((c) => statusOf(c, data.absences, data.lates))
     .sort((a, b) => a.remaining.count - b.remaining.count || a.course.period - b.course.period);
 }
 
@@ -71,7 +73,23 @@ export function toDateString(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-const DAY_NAMES = ["日", "月", "火", "水", "木", "金", "土"] as const;
+/** YYYY-MM-DD を「11月12日（木）」に。形が違えばそのまま返す */
+export function formatDateLabel(date: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  if (!m) return date;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return `${d.getMonth() + 1}月${d.getDate()}日（${dayName(d)}）`;
+}
+
+/** 日付の新しい順に並べる（同じ日は元の順を保つ） */
+export function newestFirst<T extends { date: string }>(items: readonly T[]): T[] {
+  return items
+    .map((item, i) => ({ item, i }))
+    .sort((a, b) => (a.item.date < b.item.date ? 1 : a.item.date > b.item.date ? -1 : a.i - b.i))
+    .map((x) => x.item);
+}
+
+const DAY_NAMES =["日", "月", "火", "水", "木", "金", "土"] as const;
 
 export function dayName(date: Date): string {
   return DAY_NAMES[date.getDay()];
