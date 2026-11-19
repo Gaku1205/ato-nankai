@@ -32,7 +32,7 @@ function parseLimit(v: unknown): Limit | null {
   return null;
 }
 
-function parseCourse(v: unknown): Course | null {
+export function parseCourse(v: unknown): Course | null {
   if (!isObject(v)) return null;
   const { id, name, weekday, period } = v;
   if (typeof id !== "string" || id === "") return null;
@@ -44,7 +44,7 @@ function parseCourse(v: unknown): Course | null {
   return { id, name: name.trim(), weekday: weekday as Weekday, period: period as Period, limit };
 }
 
-function parseAbsence(v: unknown): Absence | null {
+export function parseAbsence(v: unknown): Absence | null {
   if (!isObject(v)) return null;
   const { id, courseId, date } = v;
   if (typeof id !== "string" || id === "") return null;

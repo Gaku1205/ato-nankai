@@ -54,9 +54,14 @@ export function TodayView() {
             </>
           )}
         </p>
-        <Link href="/timetable" className="link">
-          時間割
-        </Link>
+        <nav className="topbar-links">
+          <Link href="/timetable" className="link">
+            時間割
+          </Link>
+          <Link href="/settings" className="link">
+            設定
+          </Link>
+        </nav>
       </header>
 
       {data && data.courses.length === 0 && (
