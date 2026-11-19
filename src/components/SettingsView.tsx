@@ -60,15 +60,15 @@ export function SettingsView() {
 
   function onTerm() {
     if (!data) return;
-    if (data.absences.length === 0) {
-      setTermMsg({ kind: "ok", text: "欠席の記録はありません" });
+    if (data.absences.length + data.lates.length === 0) {
+      setTermMsg({ kind: "ok", text: "欠席・遅刻・早退の記録はありません" });
       return;
     }
     setTermMsg(null);
     setConfirming({ kind: "term" });
   }
 
-  const absenceCount = data?.absences.length ?? 0;
+  const recordCount = (data?.absences.length ?? 0) + (data?.lates.length ?? 0);
 
   return (
     <main className="page page-settings">
@@ -129,7 +129,7 @@ export function SettingsView() {
             学期の引き継ぎ
           </h2>
           <p className="setting-text">
-            学期が終わったら、時間割と授業は残したまま、欠席の記録だけを消します。残り回数は上限に戻ります。
+            学期が終わったら、時間割と授業は残したまま、欠席・遅刻・早退の記録だけを消します。残り回数は上限に戻ります。
           </p>
           <button type="button" className="btn btn-danger setting-button" onClick={onTerm} disabled={!data}>
             欠席を0に戻す
@@ -160,13 +160,13 @@ export function SettingsView() {
 
       {confirming?.kind === "term" && (
         <ConfirmDialog
-          title="欠席の記録を消します"
-          message={`時間割と授業は残ります。欠席の記録${absenceCount}件が消えて、すべての授業の残り回数が上限に戻ります。元には戻せません。`}
+          title="欠席・遅刻・早退の記録を消します"
+          message={`時間割と授業は残ります。欠席・遅刻・早退の記録${recordCount}件が消えて、すべての授業の残り回数が上限に戻ります。元には戻せません。`}
           confirmLabel="消す"
           onCancel={() => setConfirming(null)}
           onConfirm={() => {
             update(carryOverTerm);
-            setTermMsg({ kind: "ok", text: `欠席の記録${absenceCount}件を消しました` });
+            setTermMsg({ kind: "ok", text: `欠席・遅刻・早退の記録${recordCount}件を消しました` });
             setConfirming(null);
           }}
         />

@@ -18,7 +18,12 @@ export type Course = {
   weekday: Weekday;
   period: Period;
   limit: Limit;
+  /** 遅刻・早退が何回で欠席1回か（2〜20）。無い＝換算しない */
+  latesPerAbsence?: number;
 };
+
+export const LATES_PER_ABSENCE_MIN = 2;
+export const LATES_PER_ABSENCE_MAX = 20;
 
 export type Absence = {
   id: string;
@@ -27,10 +32,21 @@ export type Absence = {
   date: string;
 };
 
+export type LateKind = "late" | "early";
+
+export type Late = {
+  id: string;
+  courseId: string;
+  /** YYYY-MM-DD */
+  date: string;
+  kind: LateKind;
+};
+
 export type AppData = {
   version: 1;
   courses: Course[];
   absences: Absence[];
+  lates: Late[];
 };
 
-export const EMPTY_DATA: AppData = { version: 1, courses: [], absences: [] };
+export const EMPTY_DATA: AppData = { version: 1, courses: [], absences: [], lates: [] };

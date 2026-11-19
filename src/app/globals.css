@@ -689,6 +689,121 @@ input {
   gap: var(--gap);
 }
 
+/* ---------- 授業の詳細 ---------- */
+.page-detail {
+  max-width: 640px;
+}
+
+.link-start {
+  justify-content: flex-start;
+}
+
+.name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.name-link:hover {
+  text-decoration: underline;
+}
+
+.detail-face {
+  display: grid;
+  gap: 4px;
+  padding: 20px;
+  border-radius: var(--radius);
+}
+
+.detail-slot {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--sub);
+}
+
+.tier-zero .detail-slot {
+  color: var(--on-red);
+}
+
+.tier-one .detail-slot {
+  color: var(--on-ink);
+}
+
+.detail-name {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.detail-count {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.detail-count .unit,
+.detail-hours {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.detail-hours {
+  margin-left: 8px;
+}
+
+.detail-number {
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-face.tier-safe .detail-number {
+  font-size: 64px;
+  color: var(--sub);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 24px 0 8px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.section-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sub);
+}
+
+.records {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap);
+}
+
+.record {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 4px 4px 4px 12px;
+  background: var(--face);
+  border-radius: var(--radius);
+}
+
 .setting {
   display: grid;
   gap: 12px;
@@ -746,6 +861,68 @@ input {
 .visually-hidden:focus-visible + .btn {
   outline: 3px solid var(--blue);
   outline-offset: 2px;
+}
+
+/* ---------- 授業の詳細（記録の行など） ---------- */
+.record-date {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+}
+
+.record-tag {
+  flex: none;
+  padding: 0 6px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.record-tag-late {
+  background: var(--ink);
+  color: var(--on-ink);
+  border: 2px solid var(--ink);
+}
+
+.record-tag-early {
+  background: var(--face);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+}
+
+.record-button {
+  flex: none;
+  width: 88px;
+  padding: 0 8px;
+}
+
+.record-empty {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  color: var(--sub);
+}
+
+.late-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+  margin-bottom: var(--gap);
+}
+
+.late-buttons .btn {
+  min-height: 56px;
+}
+
+.field-note {
+  font-size: 13px;
+  color: var(--sub);
+}
+
+select.input {
+  appearance: auto;
 }
 
 /* ---------- 広い画面 ---------- */

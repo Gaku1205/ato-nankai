@@ -14,20 +14,22 @@ const data: AppData = {
     { id: "a2", courseId: "c1", date: "2026-11-17" },
     { id: "a3", courseId: "c2", date: "2026-11-12" },
   ],
+  lates: [{ id: "l1", courseId: "c1", date: "2026-11-11", kind: "late" }],
 };
 
 describe("carryOverTerm", () => {
-  it("授業は残り、欠席の記録は空になる", () => {
+  it("授業は残り、欠席・遅刻・早退の記録は空になる", () => {
     const next = carryOverTerm(data);
     expect(next.courses).toEqual(data.courses);
     expect(next.absences).toEqual([]);
+    expect(next.lates).toEqual([]);
     expect(next.version).toBe(1);
   });
 
   it("残り回数は上限に戻る", () => {
     const next = carryOverTerm(data);
-    expect(statusOf(next.courses[0], next.absences).remaining.count).toBe(3);
-    expect(statusOf(next.courses[1], next.absences).remaining.count).toBe(3);
+    expect(statusOf(next.courses[0], next.absences, next.lates).remaining.count).toBe(3);
+    expect(statusOf(next.courses[1], next.absences, next.lates).remaining.count).toBe(3);
   });
 
   it("元のデータは変えない", () => {

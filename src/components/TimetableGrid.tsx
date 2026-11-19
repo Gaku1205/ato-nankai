@@ -66,7 +66,7 @@ export function TimetableGrid() {
                   </button>
                 );
               }
-              const s = statusOf(c, data.absences);
+              const s = statusOf(c, data.absences, data.lates);
               return (
                 <button
                   key={wd}
@@ -99,6 +99,7 @@ export function TimetableGrid() {
                 weekday: editing.weekday,
                 period: editing.period,
                 limit,
+                ...(editingCourse?.latesPerAbsence !== undefined ? { latesPerAbsence: editingCourse.latesPerAbsence } : {}),
               }),
             );
             setEditing(null);

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { formFromCourse, validateForm, type CourseForm, type FormErrors } from "@/lib/courseForm";
 import { weekdayName } from "@/lib/remaining";
@@ -127,6 +128,12 @@ export function CourseEditor({ weekday, period, course, onSave, onDelete, onClos
               onChange={(v) => set({ hoursPerClass: v })}
             />
           </div>
+        )}
+
+        {course && (
+          <Link href={`/class/${encodeURIComponent(course.id)}`} className="link link-start">
+            授業の詳細を見る
+          </Link>
         )}
 
         {course && (

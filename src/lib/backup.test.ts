@@ -12,6 +12,7 @@ const data: AppData = {
     { id: "a1", courseId: "c1", date: "2026-11-10" },
     { id: "a2", courseId: "c2", date: "2026-11-12" },
   ],
+  lates: [{ id: "l1", courseId: "c1", date: "2026-11-11", kind: "early" }],
 };
 
 function withChange(change: (d: Record<string, unknown>) => void): string {
@@ -27,8 +28,30 @@ describe("backup", () => {
   });
 
   it("空のデータも往復できる", () => {
-    const empty: AppData = { version: 1, courses: [], absences: [] };
+    const empty: AppData = { version: 1, courses: [], absences: [], lates: [] };
     expect(parseBackup(serializeBackup(empty))).toEqual({ ok: true, data: empty });
+  });
+
+  it("lates が無い古い書き出しは、遅刻なしとして読む", () => {
+    const r = parseBackup(withChange((d) => delete d.lates));
+    expect(r).toEqual({ ok: true, data: { ...data, lates: [] } });
+  });
+
+  it("遅刻・早退が1件でも形が違う・授業が無いとエラー", () => {
+    expect(
+      parseBackup(
+        withChange((d) => {
+          (d.lates as unknown[])[0] = { id: "l1", courseId: "c1", date: "2026-11-11", kind: "x" };
+        }),
+      ),
+    ).toEqual({ ok: false, error: "遅刻・早退の記録の1件目の形が違います" });
+    expect(
+      parseBackup(
+        withChange((d) => {
+          (d.lates as { courseId: string }[])[0].courseId = "zzz";
+        }),
+      ).ok,
+    ).toBe(false);
   });
 
   it("書き出しの中身は保存形式そのまま", () => {

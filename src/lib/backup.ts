@@ -1,5 +1,5 @@
-import { parseAbsence, parseCourse } from "./storage";
-import type { Absence, AppData, Course } from "./types";
+import { parseAbsence, parseCourse, parseLate } from "./storage";
+import type { Absence, AppData, Course, Late } from "./types";
 
 export type ParseBackupResult = { ok: true; data: AppData } | { ok: false; error: string };
 
@@ -7,7 +7,7 @@ const NOT_BACKUP = "あと何回休める？の書き出しファイルではあ
 
 /** 書き出すファイルの中身（保存形式そのまま） */
 export function serializeBackup(data: AppData): string {
-  return JSON.stringify({ version: 1, courses: data.courses, absences: data.absences }, null, 2);
+  return JSON.stringify({ version: 1, courses: data.courses, absences: data.absences, lates: data.lates }, null, 2);
 }
 
 /** 書き出すファイルの名前：ato-nankai-YYYY-MM-DD.json（端末の日付） */
@@ -65,5 +65,20 @@ export function parseBackup(text: string): ParseBackupResult {
     absences.push(absence);
   }
 
-  return { ok: true, data: { version: 1, courses, absences } };
+  // lates が無いファイル（遅刻・早退を入れる前の書き出し）は空として読む
+  const lates: Late[] = [];
+  if (obj.lates !== undefined) {
+    if (!Array.isArray(obj.lates)) return fail("遅刻・早退の記録の形が違います");
+    const lateIds = new Set<string>();
+    for (let i = 0; i < obj.lates.length; i++) {
+      const late = parseLate(obj.lates[i]);
+      if (!late) return fail(`遅刻・早退の記録の${i + 1}件目の形が違います`);
+      if (lateIds.has(late.id)) return fail("遅刻・早退の記録のidが重なっています");
+      if (!courseIds.has(late.courseId)) return fail("授業が見つからない遅刻・早退の記録があります");
+      lateIds.add(late.id);
+      lates.push(late);
+    }
+  }
+
+  return { ok: true, data: { version: 1, courses, absences, lates } };
 }
