@@ -6,9 +6,29 @@
   --sub: #5f636a;
   --blue: #1d5fbf;
   --red: #c4242a;
+  /* 「白抜き」の役：--ink の面の上の文字、赤い面の上の文字 */
+  --on-ink: #ffffff;
+  --on-red: #ffffff;
+  /* 重ねの下地 */
+  --scrim: rgb(10 10 10 / 0.4);
   --gap: 4px;
   --side: 12px;
   --radius: 4px;
+}
+
+/* 暗い配色：端末の設定に合わせる（同じ6つの役割を差し替える） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #0e0f11;
+    --face: #1d1f23;
+    --ink: #f2f4f7;
+    --sub: #9ea3ab;
+    --blue: #6ea8ff;
+    --red: #e5484d;
+    --on-ink: #0e0f11;
+    --on-red: #0e0f11;
+    --scrim: rgb(10 10 10 / 0.6);
+  }
 }
 
 *,
@@ -73,7 +93,7 @@ input {
 .today-day {
   display: inline-block;
   background: var(--ink);
-  color: var(--face);
+  color: var(--on-ink);
   border-radius: var(--radius);
   padding: 0 6px;
   margin: 0 2px;
@@ -114,7 +134,7 @@ input {
 
 .btn-primary {
   background: var(--ink);
-  color: var(--face);
+  color: var(--on-ink);
 }
 
 .btn-quiet {
@@ -124,7 +144,7 @@ input {
 
 .btn-danger {
   background: var(--red);
-  color: var(--face);
+  color: var(--on-red);
 }
 
 .btn-on-dark {
@@ -150,12 +170,12 @@ input {
 /* ---------- 残りの段 ---------- */
 .tier-zero {
   background: var(--red);
-  color: var(--face);
+  color: var(--on-red);
 }
 
 .tier-one {
   background: var(--ink);
-  color: var(--face);
+  color: var(--on-ink);
 }
 
 .tier-few,
@@ -167,7 +187,7 @@ input {
 .btn-absent {
   min-height: 56px;
   background: var(--ink);
-  color: var(--face);
+  color: var(--on-ink);
 }
 
 .tier-zero .btn-absent,
@@ -280,9 +300,12 @@ input {
   color: var(--sub);
 }
 
-.tier-zero .row-period,
+.tier-zero .row-period {
+  color: var(--on-red);
+}
+
 .tier-one .row-period {
-  color: var(--face);
+  color: var(--on-ink);
 }
 
 .row-name {
@@ -372,7 +395,7 @@ input {
   min-height: 56px;
   padding: 4px 4px 4px 16px;
   background: var(--ink);
-  color: var(--face);
+  color: var(--on-ink);
   border-radius: var(--radius);
   animation: toast-in 150ms ease-out;
 }
@@ -442,7 +465,7 @@ input {
 
 .grid-day.is-today {
   background: var(--ink);
-  color: var(--face);
+  color: var(--on-ink);
 }
 
 .grid-period {
@@ -515,7 +538,7 @@ input {
 }
 
 .modal::backdrop {
-  background: rgb(10 10 10 / 0.4);
+  background: var(--scrim);
 }
 
 .modal-sheet {
@@ -637,7 +660,7 @@ input {
 
 .switch-button[aria-pressed="true"] {
   background: var(--ink);
-  color: var(--face);
+  color: var(--on-ink);
 }
 
 .btn-text-danger {
@@ -649,6 +672,21 @@ input {
   color: var(--red);
   font-weight: 700;
   cursor: pointer;
+}
+
+/* ---------- 設定 ---------- */
+.topbar-links {
+  display: flex;
+  gap: 12px;
+}
+
+.page-settings {
+  max-width: 560px;
+}
+
+.settings-list {
+  display: grid;
+  gap: var(--gap);
 }
 
 /* ---------- 授業の詳細 ---------- */
@@ -683,9 +721,12 @@ input {
   color: var(--sub);
 }
 
-.tier-zero .detail-slot,
+.tier-zero .detail-slot {
+  color: var(--on-red);
+}
+
 .tier-one .detail-slot {
-  color: var(--face);
+  color: var(--on-ink);
 }
 
 .detail-name {
@@ -763,6 +804,66 @@ input {
   border-radius: var(--radius);
 }
 
+.setting {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  background: var(--face);
+  border-radius: var(--radius);
+}
+
+.setting-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.setting-text {
+  color: var(--sub);
+}
+
+.setting-button {
+  width: 100%;
+  min-height: 56px;
+}
+
+.setting-button:disabled {
+  cursor: default;
+}
+
+.setting-result {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.setting-result:empty {
+  display: none;
+}
+
+.setting-result.is-error {
+  color: var(--red);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.visually-hidden:focus-visible + .btn {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* ---------- 授業の詳細（記録の行など） ---------- */
 .record-date {
   flex: 1;
   min-width: 0;
@@ -780,7 +881,7 @@ input {
 
 .record-tag-late {
   background: var(--ink);
-  color: var(--face);
+  color: var(--on-ink);
   border: 2px solid var(--ink);
 }
 
