@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   dayName,
+  formatDateLabel,
   formatHours,
+  newestFirst,
   remainingFor,
   statusOf,
   tierOf,
@@ -62,7 +64,7 @@ describe("statusOf", () => {
       { id: "1", courseId: "a", date: "2026-11-12" },
       { id: "2", courseId: "b", date: "2026-11-12" },
       { id: "3", courseId: "a", date: "2026-11-19" },
-    ]);
+    ], []);
     expect(s.absences).toBe(2);
     expect(s.remaining.count).toBe(2);
     expect(s.tier).toBe("few");
@@ -85,6 +87,7 @@ describe("todayCourses", () => {
       { id: "2", courseId: "prog", date: "2026-11-05" },
       { id: "3", courseId: "prog", date: "2026-10-29" },
     ],
+    lates: [],
   };
 
   it("今日の曜日のコマだけを、残りが少ない順に並べる", () => {
@@ -98,6 +101,7 @@ describe("todayCourses", () => {
       ...data,
       courses: [course("p4", 4, 4, { kind: "count", max: 2 }), course("p1", 4, 1, { kind: "count", max: 2 })],
       absences: [],
+      lates: [],
     };
     expect(todayCourses(tie, thursday).map((s) => s.course.id)).toEqual(["p1", "p4"]);
   });
@@ -116,6 +120,19 @@ describe("日付と表記", () => {
   });
   it("toDateString は端末の日付を YYYY-MM-DD に", () => {
     expect(toDateString(new Date(2026, 0, 5, 23, 59))).toBe("2026-01-05");
+  });
+  it("formatDateLabel は「11月12日（木）」の形", () => {
+    expect(formatDateLabel("2026-11-12")).toBe("11月12日（木）");
+    expect(formatDateLabel("bad")).toBe("bad");
+  });
+  it("newestFirst は日付の新しい順（同じ日は元の順）", () => {
+    const list = [
+      { id: "a", date: "2026-11-05" },
+      { id: "b", date: "2026-11-19" },
+      { id: "c", date: "2026-11-05" },
+      { id: "d", date: "2026-11-12" },
+    ];
+    expect(newestFirst(list).map((x) => x.id)).toEqual(["b", "d", "a", "c"]);
   });
   it("dayName", () => {
     expect(dayName(new Date(2026, 10, 19))).toBe("木");

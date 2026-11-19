@@ -1,4 +1,15 @@
-import { EMPTY_DATA, type Absence, type AppData, type Course, type Limit, type Period, type Weekday } from "./types";
+import {
+  EMPTY_DATA,
+  LATES_PER_ABSENCE_MAX,
+  LATES_PER_ABSENCE_MIN,
+  type Absence,
+  type AppData,
+  type Course,
+  type Late,
+  type Limit,
+  type Period,
+  type Weekday,
+} from "./types";
 
 export const STORAGE_KEY = "ato-nankai:v1";
 
@@ -41,7 +52,27 @@ function parseCourse(v: unknown): Course | null {
   if (!isFiniteNumber(period) || !Number.isInteger(period) || period < 1 || period > 6) return null;
   const limit = parseLimit(v.limit);
   if (!limit) return null;
-  return { id, name: name.trim(), weekday: weekday as Weekday, period: period as Period, limit };
+  const course: Course = { id, name: name.trim(), weekday: weekday as Weekday, period: period as Period, limit };
+  const per = v.latesPerAbsence;
+  if (
+    isFiniteNumber(per) &&
+    Number.isInteger(per) &&
+    per >= LATES_PER_ABSENCE_MIN &&
+    per <= LATES_PER_ABSENCE_MAX
+  ) {
+    course.latesPerAbsence = per;
+  }
+  return course;
+}
+
+function parseLate(v: unknown): Late | null {
+  if (!isObject(v)) return null;
+  const { id, courseId, date, kind } = v;
+  if (typeof id !== "string" || id === "") return null;
+  if (typeof courseId !== "string" || courseId === "") return null;
+  if (typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  if (kind !== "late" && kind !== "early") return null;
+  return { id, courseId, date, kind };
 }
 
 function parseAbsence(v: unknown): Absence | null {
@@ -80,7 +111,14 @@ export function parseData(raw: string | null): AppData {
     const absence = parseAbsence(a);
     if (absence && ids.has(absence.courseId)) absences.push(absence);
   }
-  return { version: 1, courses, absences };
+  const lates: Late[] = [];
+  if (Array.isArray(json.lates)) {
+    for (const l of json.lates) {
+      const late = parseLate(l);
+      if (late && ids.has(late.courseId)) lates.push(late);
+    }
+  }
+  return { version: 1, courses, absences, lates };
 }
 
 export function loadData(store: KeyValueStore): AppData {
@@ -115,6 +153,7 @@ export function upsertCourse(data: AppData, course: Course): AppData {
     ...data,
     courses: [...others, course],
     absences: data.absences.filter((a) => !removedIds.has(a.courseId)),
+    lates: data.lates.filter((l) => !removedIds.has(l.courseId)),
   };
 }
 
@@ -124,6 +163,33 @@ export function deleteCourse(data: AppData, courseId: string): AppData {
     ...data,
     courses: data.courses.filter((c) => c.id !== courseId),
     absences: data.absences.filter((a) => a.courseId !== courseId),
+    lates: data.lates.filter((l) => l.courseId !== courseId),
+  };
+}
+
+export function addLate(data: AppData, late: Late): AppData {
+  return { ...data, lates: [...data.lates, late] };
+}
+
+export function removeLate(data: AppData, lateId: string): AppData {
+  return { ...data, lates: data.lates.filter((l) => l.id !== lateId) };
+}
+
+/** 遅刻・早退が何回で欠席1回か。undefined＝換算しない（範囲外は換算しない扱い） */
+export function setLatesPerAbsence(data: AppData, courseId: string, value: number | undefined): AppData {
+  const valid =
+    value !== undefined &&
+    Number.isInteger(value) &&
+    value >= LATES_PER_ABSENCE_MIN &&
+    value <= LATES_PER_ABSENCE_MAX;
+  return {
+    ...data,
+    courses: data.courses.map((c) => {
+      if (c.id !== courseId) return c;
+      const { latesPerAbsence: _old, ...rest } = c;
+      void _old;
+      return valid ? { ...rest, latesPerAbsence: value } : rest;
+    }),
   };
 }
 
