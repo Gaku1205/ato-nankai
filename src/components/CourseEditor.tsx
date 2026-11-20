@@ -131,7 +131,7 @@ export function CourseEditor({ weekday, period, course, onSave, onDelete, onClos
         )}
 
         {course && (
-          <Link href={`/class/${encodeURIComponent(course.id)}`} className="link link-start">
+          <Link href={`/class/?id=${encodeURIComponent(course.id)}`} className="link link-start">
             授業の詳細を見る
           </Link>
         )}

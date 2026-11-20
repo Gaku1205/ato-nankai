@@ -21,7 +21,7 @@ export function ClassCard({ status, hero = false, onAbsent }: Props) {
         <div className="hero-head">
           <p className="hero-period">{course.period}限</p>
           <h1 className="hero-name">
-            <Link href={`/class/${encodeURIComponent(course.id)}`} className="name-link">
+            <Link href={`/class/?id=${encodeURIComponent(course.id)}`} className="name-link">
               {course.name}
             </Link>
           </h1>
@@ -49,7 +49,7 @@ export function ClassCard({ status, hero = false, onAbsent }: Props) {
     <li className={`row tier-${tier}`} aria-label={label}>
       <span className="row-title">
         <span className="row-period">{course.period}限</span>
-        <Link href={`/class/${encodeURIComponent(course.id)}`} className="row-name name-link">
+        <Link href={`/class/?id=${encodeURIComponent(course.id)}`} className="row-name name-link">
           {course.name}
         </Link>
       </span>
