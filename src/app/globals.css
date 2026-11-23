@@ -927,13 +927,29 @@ select.input {
 
 /* ---------- 広い画面 ---------- */
 @media (min-width: 960px) {
+  /* 1列で縦に積む（主役の面の下にほかのコマ）。中身の幅は最大 1120px で中央 */
   .today-layout {
-    grid-template-columns: minmax(0, 1fr) 400px;
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
   }
 
   .hero {
     min-height: min(70vh, 640px);
+  }
+
+  /* 「あと」「数字」「回」を左に寄せ、横に散らさずひとかたまりにする */
+  .hero-figure {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-count {
+    width: max-content;
+    max-width: 100%;
+    justify-content: flex-start;
   }
 
   .hero-number {
