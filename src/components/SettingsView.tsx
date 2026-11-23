@@ -90,7 +90,7 @@ export function SettingsView() {
             書き出し
           </h2>
           <p className="setting-text">
-            授業と欠席の記録を、ファイルに書き出します。機種変更のときに、新しい端末で読み込めます。
+            授業と、欠席・遅刻・早退の記録を、ファイルに書き出します。機種変更のときに、新しい端末で読み込めます。
           </p>
           <button type="button" className="btn btn-primary setting-button" onClick={onExport} disabled={!data}>
             書き出す
@@ -104,7 +104,7 @@ export function SettingsView() {
           <h2 id="set-import" className="setting-title">
             読み込み
           </h2>
-          <p className="setting-text">書き出したファイルから、授業と欠席の記録を戻します。今のデータは置き換わります。</p>
+          <p className="setting-text">書き出したファイルから、授業と、欠席・遅刻・早退の記録を戻します。今のデータは置き換わります。</p>
           <input
             ref={fileRef}
             id="import-file"
@@ -143,7 +143,7 @@ export function SettingsView() {
       {confirming?.kind === "import" && (
         <ConfirmDialog
           title="今のデータを置き換えます"
-          message={`ファイルの授業${confirming.data.courses.length}件・欠席の記録${confirming.data.absences.length}件で、今の授業と欠席の記録をすべて置き換えます。よろしいですか？`}
+          message={`ファイルの授業${confirming.data.courses.length}件・欠席・遅刻・早退の記録${confirming.data.absences.length + confirming.data.lates.length}件で、今の授業と欠席・遅刻・早退の記録をすべて置き換えます。よろしいですか？`}
           confirmLabel="置き換える"
           onCancel={() => setConfirming(null)}
           onConfirm={() => {
@@ -151,7 +151,7 @@ export function SettingsView() {
             update(() => next);
             setImportMsg({
               kind: "ok",
-              text: `授業${next.courses.length}件・欠席の記録${next.absences.length}件を読み込みました`,
+              text: `授業${next.courses.length}件・欠席・遅刻・早退の記録${next.absences.length + next.lates.length}件を読み込みました`,
             });
             setConfirming(null);
           }}
